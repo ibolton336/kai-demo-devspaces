@@ -1,4 +1,4 @@
-name: Build and Push to GHCR
+name: Build and Push to GHCR and Quay
 
 on:
   push:
@@ -27,9 +27,22 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build container image
+      - name: Log in to Quay.io
+        uses: docker/login-action@v3
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+
+      - name: Build and push container images
         run: |
-          IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/kai-devspaces:latest
-          podman build -f Containerfile -t $IMAGE_NAME .
-          podman push $IMAGE_NAME
+          GHCR_IMAGE=ghcr.io/${{ github.repository_owner }}/kai-devspaces:latest
+          QUAY_IMAGE=quay.io/ibolton/kai-devspaces:latest
+          
+          # Build image
+          podman build -f Containerfile -t $GHCR_IMAGE -t $QUAY_IMAGE .
+          
+          # Push to both registries
+          podman push $GHCR_IMAGE
+          podman push $QUAY_IMAGE
 
