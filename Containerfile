@@ -21,6 +21,6 @@ RUN dnf clean all && \
 
 # Add Kai extension from GitHub release
 RUN curl -L -o /konveyor.vsix https://github.com/konveyor/editor-extensions/releases/download/v0.2.0/konveyor-0.2.0.vsix
-ENV DEFAULT_EXTENSIONS=/konveyor.vsix   
+ENV DEFAULT_EXTENSIONS=/konveyor.vsix
 
 USER user

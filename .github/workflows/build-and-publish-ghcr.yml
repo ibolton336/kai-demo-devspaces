@@ -34,15 +34,17 @@ jobs:
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_PASSWORD }}
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build and push container images
-        run: |
-          GHCR_IMAGE=ghcr.io/${{ github.repository_owner }}/kai-devspaces:latest
-          QUAY_IMAGE=quay.io/ibolton/kai-devspaces:latest
-          
-          # Build image
-          podman build -f Containerfile -t $GHCR_IMAGE -t $QUAY_IMAGE .
-          
-          # Push to both registries
-          podman push $GHCR_IMAGE
-          podman push $QUAY_IMAGE
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Containerfile
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/kai-devspaces:latest
+            quay.io/ibolton/kai-devspaces:latest
 
